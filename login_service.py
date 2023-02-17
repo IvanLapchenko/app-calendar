@@ -9,8 +9,8 @@ login_manager.login_view = "login"
 login_manager.init_app(app)
 
 
-def get_user_by_id(value: any):
-    user = select(User).where(User.id == value)
+def get_user_by_nickname(value: any):
+    user = select(User).where(User.nickname == value)
     return user if user else None
 
 
