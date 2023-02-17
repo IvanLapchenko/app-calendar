@@ -5,7 +5,7 @@ from sqlalchemy_utils import database_exists, create_database
 from flask_login import UserMixin
 
 
-engine = create_engine("sqlite:///app.db", echo=True)
+engine = create_engine("sqlite:///app.db?check_same_thread=False", echo=True)
 Session = sessionmaker(bind=engine)
 session = Session()
 Base = declarative_base()

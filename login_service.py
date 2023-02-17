@@ -1,5 +1,5 @@
 from sqlalchemy import select
-from database import User
+from .database import User
 from . import app
 from flask_login import LoginManager
 

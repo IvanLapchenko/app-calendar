@@ -1,12 +1,11 @@
-from sqlalchemy import select
 from sqlalchemy.orm import Session
-from database import User, engine
+from .database import User, engine
 
 session = Session(engine)
 
 
 def get_user_by_nickname(value: any):
-    user = select(User).where(User.nickname == value)
+    user = session.query(User).where(User.nickname == value).first()
     return user
 
 
