@@ -10,3 +10,4 @@ class LoginForm(FlaskForm):
 
 class SignupForm(LoginForm):
     email = StringField("Email", [validators.DataRequired(), validators.Email()])
+    submit = SubmitField("Sign up")
