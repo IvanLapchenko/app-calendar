@@ -1,4 +1,6 @@
-from flask import render_template, request
+from flask import render_template, request, redirect, flash
+
+from login_service import get_user_by_nickname
 from .forms import LoginForm, SignupForm
 from . import app
 
@@ -23,6 +25,12 @@ def signup():
     form = SignupForm()
 
     if request.method == "POST":
-        return request.form
+        user = get_user_by_nickname(form.nickname)
+
+        if user:
+            flash("This user already exists. ")
+            return redirect("signup")
+
+        pass #add user
 
     return render_template("signup.html", form=form)
