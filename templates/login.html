@@ -5,6 +5,16 @@
     <title>Log in</title>
 </head>
 <body>
-
+    <form method="POST" action="/login">
+        {{form.username.label}}<br>
+        {{form.username}}<br>
+        {{form.email.label}}<br>
+        {{form.email}}<br>
+        {{form.password.label}}<br>
+        {{form.password}}<br>
+        {{form.remember}}
+        {{form.remember.label}}<br>
+        {{form.submit}}
+    </form>
 </body>
 </html>
