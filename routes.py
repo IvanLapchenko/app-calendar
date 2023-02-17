@@ -1,8 +1,8 @@
 from flask import render_template, request, redirect, flash
-
-from login_service import get_user_by_nickname
+from communicate_with_db import add_item_to_db, get_user_by_nickname
 from .forms import LoginForm, SignupForm
 from . import app
+
 
 @app.route("/")
 @app.route("/main")
@@ -31,6 +31,7 @@ def signup():
             flash("This user already exists. ")
             return redirect("signup")
 
-        pass #add user
+        add_item_to_db(user)
+        return redirect("login")
 
     return render_template("signup.html", form=form)
