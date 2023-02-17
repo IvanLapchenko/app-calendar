@@ -2,6 +2,8 @@ from sqlalchemy import Column, Integer, Date, Time, String, create_engine
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy_utils import database_exists, create_database
+from flask_login import UserMixin
+
 
 engine = create_engine("sqlite:///app.db", echo=True)
 Session = sessionmaker(bind=engine)
@@ -19,7 +21,7 @@ class Event(Base):
     describe = Column("describe", String(240), nullable=True)
 
 
-class User(Base):
+class User(Base, UserMixin):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True)
