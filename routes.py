@@ -1,5 +1,5 @@
 from flask import render_template
-from forms import LoginForm, SignupForm
+from .forms import LoginForm, SignupForm
 from . import app
 
 @app.route("/")
