@@ -13,7 +13,7 @@ def main():
     return render_template("main.html")
 
 
-@app.route("/login", methods=["GET", "POST"])
+@app.route("/login", methods=["GET"])
 def login():
     form = LoginForm()
 
@@ -53,3 +53,10 @@ def signup():
         return redirect("login")
 
     return render_template("signup.html", form=form)
+
+
+@app.errorhandler(404)
+@app.errorhandler(500)
+@app.errorhandler(405)
+def handler(e):
+    return render_template("error_page.html", code=e.code)
