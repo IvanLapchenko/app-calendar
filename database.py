@@ -24,6 +24,7 @@ class User(Base):
 
     id = Column(Integer, primary_key=True)
     nickname = Column(String)
+    email = Column(String)
     password = Column(String)
 
 
