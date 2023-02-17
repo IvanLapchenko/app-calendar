@@ -12,3 +12,9 @@ def main():
 def login():
     form = LoginForm()
     return render_template("login.html", form=form)
+
+
+@app.route("/signup")
+def signup():
+    form = SignupForm()
+    return render_template("signup.html", form=form)
