@@ -7,7 +7,7 @@ session = Session(engine)
 
 def get_user_by_nickname(value: any):
     user = select(User).where(User.nickname == value)
-    return user if user else None
+    return user
 
 
 def add_item_to_db(obj):

@@ -20,6 +20,13 @@ class Event(Base):
     header = Column("header", String(80))
     describe = Column("describe", String(240), nullable=True)
 
+    def __init__(self, date, time, header, describe):
+        super().__init__()
+        self.date = date
+        self.time = time
+        self.header = header
+        self.describe = describe
+
 
 class User(Base, UserMixin):
     __tablename__ = "users"
@@ -28,6 +35,12 @@ class User(Base, UserMixin):
     nickname = Column(String)
     email = Column(String)
     password = Column(String)
+
+    def __init__(self, nickname, email, password):
+        super().__init__()
+        self.nickname = nickname
+        self.email = email
+        self.password = password
 
 
 #create db if it doesnt exists

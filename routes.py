@@ -1,5 +1,9 @@
 from flask import render_template, request, redirect, flash
+from flask_login import login_user
+from werkzeug.security import generate_password_hash, check_password_hash
+
 from communicate_with_db import add_item_to_db, get_user_by_nickname
+from database import User
 from .forms import LoginForm, SignupForm
 from . import app
 
@@ -15,8 +19,19 @@ def login():
     form = LoginForm()
 
     if request.method == "POST":
-        return request.form
+        user = get_user_by_nickname(form.nickname)
 
+        if user:
+            is_password_correct = check_password_hash(user.password, form.password)
+
+            if is_password_correct:
+                login_user(user)
+                return redirect("main")
+
+            flash("Password is incorrect. ")
+
+        flash("There is no user with this name. ")
+        return redirect("login")
     return render_template("login.html", form=form)
 
 
@@ -31,7 +46,10 @@ def signup():
             flash("This user already exists. ")
             return redirect("signup")
 
+        password = generate_password_hash(form.password)
+        user = User(nickname=form.nickname, email=form.email, password=password)
         add_item_to_db(user)
+
         return redirect("login")
 
     return render_template("signup.html", form=form)
