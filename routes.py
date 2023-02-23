@@ -1,3 +1,5 @@
+from datetime import timedelta, date
+import requests
 from flask import render_template, request, redirect, flash
 from flask_login import login_user
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -10,7 +12,14 @@ from . import app
 @app.route("/")
 @app.route("/main")
 def main():
-    return render_template("main.html", sc=sc)
+    mock = {}
+    for i in range(5):
+        event1 = requests.get("https://www.boredapi.com/api/activity/")
+        event2 = requests.get("https://www.boredapi.com/api/activity/")
+        event_date = date.today() + timedelta(days=i)
+        date_str = event_date.strftime('%d %B')
+        mock[date_str] = [event1.json()["activity"], event2.json()["activity"]]
+    return render_template("main.html", evens_for_5_days=mock)
 
 
 @app.route("/login", methods=["GET"])
