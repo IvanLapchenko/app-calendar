@@ -10,6 +10,6 @@ login_manager.init_app(app)
 
 
 @login_manager.user_loader
-def load_user(user_id):
+def load_user(user_id: str):
     return select(User).where(User.id == user_id)
 

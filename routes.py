@@ -10,7 +10,7 @@ from . import app
 @app.route("/")
 @app.route("/main")
 def main():
-    return render_template("main.html")
+    return render_template("main.html", sc=sc)
 
 
 @app.route("/login", methods=["GET"])

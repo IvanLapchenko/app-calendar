@@ -5,8 +5,15 @@
     <title>Calendar</title>
 </head>
 <body>
-    <div>
-        Content will be here
+    {% for current_date in evens_for_5_days %}
+    <h3>{{ current_date }}</h3>
+    <div class="single-day">
+        {% for event in evens_for_5_days[current_date] %}
+            <div class="event">
+                {{ event }}
+            </div>
+        {% endfor %}
     </div>
+    {% endfor %}
 </body>
 </html>
