@@ -16,7 +16,7 @@ def make_response_with_headers(data, *headers):
 @app.route("/create_event", methods=["POST"])
 def create_event():
     data_from_request = request.get_json()
-    data_from_request["user"] = current_user.id
+    data_from_request["user"] = "admin"
     event = Event(**data_from_request)
     add_item_to_db(event)
     response = make_response()
