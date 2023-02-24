@@ -1,8 +1,18 @@
+from datetime import datetime
+import json
 from flask import request, make_response, jsonify
-from flask_login import current_user
 from .communicate_with_db import add_item_to_db, get_events_for_current_user_by
-from database import Event
+from .database import Event
 from . import app
+
+
+def change_format_of_data(data_to_format):
+    request_str_data = data_to_format.decode('utf-8')
+    jsonified_dict = json.loads(request_str_data)
+    jsonified_dict["user"] = "admin"
+    jsonified_dict["date"] = datetime.strptime(jsonified_dict["date"], "%Y-%m-%d").date()
+    jsonified_dict["time"] = datetime.strptime(jsonified_dict["time"], "%H:%M").time()
+    return jsonified_dict
 
 
 def make_response_with_headers(data, *headers):
@@ -15,11 +25,11 @@ def make_response_with_headers(data, *headers):
 
 @app.route("/create_event", methods=["POST"])
 def create_event():
-    data_from_request = request.get_json()
-    data_from_request["user"] = "admin"
+    request_byte_string = request.data
+    data_from_request = change_format_of_data(request_byte_string)
     event = Event(**data_from_request)
     add_item_to_db(event)
-    response = make_response()
+    response = make_response_with_headers("success", "POST")
     response.status_code = 200
     return response
 

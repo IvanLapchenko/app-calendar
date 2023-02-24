@@ -3,7 +3,7 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 from flask_login import UserMixin
 
 
-engine = create_engine("sqlite:///app.db?check_same_thread=False", echo=True)
+engine = create_engine("sqlite:///app.db?check_same_thread=False")
 Session = sessionmaker(bind=engine)
 session = Session()
 Base = declarative_base()

@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from database import User, engine, Event
+from .database import User, engine, Event
 
 session = Session(engine)
 
