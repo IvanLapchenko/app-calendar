@@ -1,5 +1,4 @@
-from sqlalchemy import select
-from .database import User
+from .database import User, session
 from . import app
 from flask_login import LoginManager
 
@@ -11,5 +10,5 @@ login_manager.init_app(app)
 
 @login_manager.user_loader
 def load_user(user_id: str):
-    return select(User).where(User.id == user_id)
+    return session.query(User).where(User.id == user_id).first
 

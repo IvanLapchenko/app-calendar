@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from .database import User, engine
+from .database import User, engine, Event
 
 session = Session(engine)
 
@@ -13,3 +13,7 @@ def add_item_to_db(obj):
     session.add(obj)
     session.commit()
 
+
+def get_events_for_current_user_by(date):
+    events = session.query(Event).filter(Event.name == "John", Event.age == 30).all()
+    return events
