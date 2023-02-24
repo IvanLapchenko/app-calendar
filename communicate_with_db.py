@@ -15,5 +15,5 @@ def add_item_to_db(obj):
 
 
 def get_events_for_current_user_by(date):
-    events = session.query(Event).filter(Event.name == "John", Event.age == 30).all()
+    events = session.query(Event).filter(Event.date == date, Event.user == 30).all()
     return events
