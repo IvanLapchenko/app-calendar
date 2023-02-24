@@ -6,11 +6,15 @@ from .database import Event
 from . import app
 
 
+def convert_date_to_object(date_to_convert):
+    return datetime.strptime(date_to_convert, "%Y-%m-%d").date()
+
+
 def change_format_of_data(data_to_format):
     request_str_data = data_to_format.decode('utf-8')
     jsonified_dict = json.loads(request_str_data)
-    jsonified_dict["user"] = "admin"
-    jsonified_dict["date"] = datetime.strptime(jsonified_dict["date"], "%Y-%m-%d").date()
+    jsonified_dict["user"] = 1
+    jsonified_dict["date"] = convert_date_to_object(jsonified_dict["date"])
     jsonified_dict["time"] = datetime.strptime(jsonified_dict["time"], "%H:%M").time()
     return jsonified_dict
 
@@ -36,6 +40,7 @@ def create_event():
 
 @app.route("/get_events_by/<date>", methods=["GET"])
 def get_events_by(date):
+    date = convert_date_to_object(date)
     data = get_events_for_current_user_by(date)
     response = make_response_with_headers(data, "GET")
     return response
