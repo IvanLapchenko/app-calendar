@@ -6,41 +6,35 @@ from .database import Event
 from . import app
 
 
-def convert_date_to_object(date_to_convert):
-    return datetime.strptime(date_to_convert, "%Y-%m-%d").date()
-
-
 def change_format_of_data(data_to_format):
     request_str_data = data_to_format.decode('utf-8')
     jsonified_dict = json.loads(request_str_data)
     jsonified_dict["user"] = 1
-    jsonified_dict["date"] = convert_date_to_object(jsonified_dict["date"])
-    jsonified_dict["time"] = datetime.strptime(jsonified_dict["time"], "%H:%M").time()
+    jsonified_dict["date"] = 1
+    jsonified_dict["time"] = 1
     return jsonified_dict
-
-
-def make_response_with_headers(data, *headers):
-    response = make_response(jsonify(data))
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Access-Control-Allow-Methods', *headers)
-    response.headers.add('Access-Control-Allow-Headers', '*')
-    return response
 
 
 @app.route("/create_event", methods=["POST"])
 def create_event():
-    request_byte_string = request.data
-    data_from_request = change_format_of_data(request_byte_string)
-    event = Event(**data_from_request)
-    add_item_to_db(event)
-    response = make_response_with_headers("success", "POST")
+    if request.data:
+        print(type(request.data))
+        request_byte_string = request.data
+        jsonified_dict = json.loads(request_byte_string)
+        print(request_byte_string)
+        print(jsonified_dict)
+    else:
+        print(request.data)
+    # event = Event(**data_from_request)
+    # add_item_to_db(event)
+    response = make_response("success")
     response.status_code = 200
     return response
 
 
 @app.route("/get_events_by/<date>", methods=["GET"])
 def get_events_by(date):
-    date = convert_date_to_object(date)
+    date = "date"
     data = get_events_for_current_user_by(date)
-    response = make_response_with_headers(data, "GET")
+    response = make_response(data)
     return response
