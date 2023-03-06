@@ -1,9 +1,9 @@
-from werkzeug.security import check_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 from .communicate_with_db import add_item_to_db, get_events_for_current_user_by, get_user_by_nickname
 from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token
 from flask import request, make_response, jsonify
 from datetime import datetime, timedelta
-from .database import Event
+from .database import Event, User
 from . import app
 import json
 
@@ -70,3 +70,22 @@ def login():
         response = make_response({"isLogged": False})
         response.status_code = 400
         return response
+
+
+@app.route("/signup", methods=["POST"])
+def signup():
+    request_data = json.loads(request.data)
+    user = get_user_by_nickname(request_data["nickname"])
+
+    if user:
+        response = make_response({"isAddedToDB": False, "reason": "user exist"})
+        response.status_code = 409
+        return response
+
+    password = generate_password_hash(request_data["password"])
+    user = User(request_data["nickname"], request_data["email"], password)
+    add_item_to_db(user)
+
+    response = make_response({"isAddedToDB": True})
+    response.status_code = 200
+    return response
