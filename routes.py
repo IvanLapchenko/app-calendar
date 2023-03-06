@@ -1,11 +1,11 @@
 from werkzeug.security import check_password_hash
 from .communicate_with_db import add_item_to_db, get_events_for_current_user_by, get_user_by_nickname
-from flask import request, make_response
-from datetime import datetime
+from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token
+from flask import request, make_response, jsonify
+from datetime import datetime, timedelta
 from .database import Event
 from . import app
 import json
-import jwt
 
 
 def convert_time_to_object(time_to_format):
@@ -25,6 +25,7 @@ def prepare_data_to_database(data):
 
 
 @app.route("/create_event", methods=["POST"])
+@jwt_required()
 def create_event():
     if request.data:
         request_data = prepare_data_to_database(request.data)
@@ -33,15 +34,18 @@ def create_event():
         event = Event(**request_data)
         add_item_to_db(event)
 
-        response = make_response("success")
+        response = make_response({"msg": "success"})
         response.status_code = 200
 
         return response
-    return make_response("there's no data", 400)
+    return make_response({"msg": "there's no data"}, 400)
 
 
 @app.route("/get_events_by/<date>", methods=["GET"])
+@jwt_required()
 def get_events_by(date):
+    current_user = get_jwt_identity()
+    print(current_user)
     date = datetime.fromisoformat(date)
     data = get_events_for_current_user_by(date, 1)
     response = make_response(data)
@@ -57,13 +61,7 @@ def login():
         is_password_correct = check_password_hash(user.password, request_data["password"])
 
         if is_password_correct:
-            payload = {
-                "user_id": user.id,
-                "exp": None,
-                "iat": datetime.utcnow()
-            }
-
-            token = jwt.encode(payload, app.config["SECRET_KEY"], algorithm="HS256")
+            token = create_access_token(identity=user.id, expires_delta=timedelta(days=30))
 
             response = make_response({"isLogged": True, "token": token})
             response.status_code = 200
