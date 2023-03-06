@@ -1,9 +1,11 @@
-from datetime import datetime
-import json
+from werkzeug.security import check_password_hash
+from .communicate_with_db import add_item_to_db, get_events_for_current_user_by, get_user_by_nickname
 from flask import request, make_response
-from .communicate_with_db import add_item_to_db, get_events_for_current_user_by
+from datetime import datetime
 from .database import Event
 from . import app
+import json
+import jwt
 
 
 def convert_time_to_object(time_to_format):
@@ -41,6 +43,32 @@ def create_event():
 @app.route("/get_events_by/<date>", methods=["GET"])
 def get_events_by(date):
     date = datetime.fromisoformat(date)
-    data = get_events_for_current_user_by(date)
+    data = get_events_for_current_user_by(date, 1)
     response = make_response(data)
     return response
+
+
+@app.route("/login", methods=["POST"])
+def login():
+    request_data = json.loads(request.data)
+    user = get_user_by_nickname(request_data["nickname"])
+
+    if user:
+        is_password_correct = check_password_hash(user.password, request_data["password"])
+
+        if is_password_correct:
+            payload = {
+                "user_id": user.id,
+                "exp": None,
+                "iat": datetime.utcnow()
+            }
+
+            token = jwt.encode(payload, app.config["SECRET_KEY"], algorithm="HS256")
+
+            response = make_response({"isLogged": True, "token": token})
+            response.status_code = 200
+            return response
+
+        response = make_response({"isLogged": False})
+        response.status_code = 400
+        return response
