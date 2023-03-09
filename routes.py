@@ -45,9 +45,8 @@ def create_event():
 @jwt_required()
 def get_events_by(date):
     current_user = get_jwt_identity()
-    print(current_user)
-    date = datetime.fromisoformat(date)
-    data = get_events_for_current_user_by(date, 1)
+    date = datetime.fromisoformat(date).date()
+    data = get_events_for_current_user_by(date, current_user)
     response = make_response(data)
     return response
 
