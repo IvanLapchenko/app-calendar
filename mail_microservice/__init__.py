@@ -1,10 +1,11 @@
-from . import app
-from flask_mail import Mail
-from .credintials import *
-from flask_mail import Message
 import time
-from .communicate_with_db import check_for_near_events, get_user_email_by_id
+from flask import Flask
+from flask_mail import Mail
+from credintials import *
+from flask_mail import Message
+import requests
 
+app = Flask(__name__)
 
 app.config['MAIL_SERVER'] = 'smtp.ukr.net'
 app.config['MAIL_PORT'] = 465
@@ -27,13 +28,19 @@ def send_email(recipient, header, body):
 
 def check_for_events_every_hour():
     while True:
-        events = check_for_near_events()
+
+        events = requests.get("http://127.0.0.1:5000/check_for_near_events").json()
         if len(events) > 0:
             for event in events:
-                recipient = get_user_email_by_id(event.user)
+                recipient = requests.get("http://127.0.0.1:5000/get_user_email_by_id").json()
                 header = event.header
                 body = f"{event.time} \n {event.describe}"
 
                 send_email(recipient, header, body)
-        time.sleep(3600)
+        time.sleep(30)
 
+
+check_for_events_every_hour()
+
+if __name__ == '__main__':
+    app.run(host='127.0.0.1', port=3000)

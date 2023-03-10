@@ -12,3 +12,4 @@ app.config["JWT_SECRET_KEY"] = secrets.token_hex(16)
 
 from .login_service import *
 from . import routes
+

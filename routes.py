@@ -1,5 +1,4 @@
 from werkzeug.security import check_password_hash, generate_password_hash
-
 from .communicate_with_db import *
 from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token
 from flask import request, make_response
@@ -92,3 +91,12 @@ def signup():
     response.status_code = 200
     return response
 
+
+@app.route("/check_for_near_events")
+def get_events():
+    return check_for_near_events()
+
+
+@app.route("/get_user_email_by_id/<id>")
+def get_email(id):
+    return get_user_email_by_id(id)
