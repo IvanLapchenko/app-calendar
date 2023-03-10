@@ -1,11 +1,13 @@
 from werkzeug.security import check_password_hash, generate_password_hash
-from .communicate_with_db import add_item_to_db, get_events_for_current_user_by, get_user_by_nickname
+
+from .communicate_with_db import *
 from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token
-from flask import request, make_response, jsonify
+from flask import request, make_response
 from datetime import datetime, timedelta
 from .database import Event, User
 from . import app
 import json
+
 
 
 def convert_time_to_object(time_to_format):
@@ -48,6 +50,7 @@ def get_events_by(date):
     date = datetime.fromisoformat(date).date()
     data = get_events_for_current_user_by(date, current_user)
     response = make_response(data)
+    print(check_for_near_events())
     return response
 
 
@@ -88,3 +91,4 @@ def signup():
     response = make_response({"isAddedToDB": True})
     response.status_code = 200
     return response
+
