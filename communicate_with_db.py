@@ -31,7 +31,10 @@ def add_item_to_db(obj):
 
 
 def get_events_for_current_user_by(date: date, user: int):
+    print(type(date))
+    print(user)
     events = session.query(Event).filter(Event.date == date, Event.user == user).all()
+    print(events)
     jsonified_events = []
     for event in events:
         print(event)
@@ -40,13 +43,12 @@ def get_events_for_current_user_by(date: date, user: int):
 
 
 def check_for_near_events():
-    now = datetime.now()
-    nearest_hour = (now + timedelta(hours=1)).replace(minute=0, second=0, microsecond=0)
-
-    events = session.query(Event).filter(Event.time >= now, Event.time < nearest_hour).all()
+    now = datetime.now().time()
+    now = now.replace(second=0, microsecond=0)
+    events = session.query(Event).where(Event.time == now).all()
     return events
 
 
-def get_user_email_by_id(id: int):
-    email = session.query(User).where(User.id == id).first().email
+def get_user_email_by_id(id: str):
+    email = session.query(User).where(User.id == int(id)).first().email
     return email

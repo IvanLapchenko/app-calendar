@@ -8,7 +8,6 @@ from . import app
 import json
 
 
-
 def convert_time_to_object(time_to_format):
     return datetime.strptime(time_to_format, "%H:%M").time()
 
@@ -19,7 +18,7 @@ def convert_date_to_object(date_to_format):
 
 def prepare_data_to_database(data):
     data = json.loads(data)
-    data["user"] = 1
+    data["user"] = get_jwt_identity()
     data["date"] = convert_date_to_object(data["date"])
     data["time"] = convert_time_to_object(data["time"])
     return data
@@ -49,7 +48,6 @@ def get_events_by(date):
     date = datetime.fromisoformat(date).date()
     data = get_events_for_current_user_by(date, current_user)
     response = make_response(data)
-    print(check_for_near_events())
     return response
 
 
@@ -94,9 +92,14 @@ def signup():
 
 @app.route("/check_for_near_events")
 def get_events():
-    return check_for_near_events()
+    data = []
+    for event in check_for_near_events():
+        data.append(create_json_from(event))
+    response = make_response(data)
+    return response
 
 
 @app.route("/get_user_email_by_id/<id>")
 def get_email(id):
-    return get_user_email_by_id(id)
+    response = make_response({"user_mail": get_user_email_by_id(id)})
+    return response
