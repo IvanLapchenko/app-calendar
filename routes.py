@@ -103,3 +103,16 @@ def get_events():
 def get_email(id):
     response = make_response({"user_mail": get_user_email_by_id(id)})
     return response
+
+
+@app.route("/delete_user_by/<email>")
+def delete_user_by(email):
+    try:
+        delete_user_events_by_email(email)
+        delete_user_by_email(email)
+        resp_data = {"is_deleted": True}
+    except:
+        resp_data = {"is_deleted": False}
+
+    response = make_response(resp_data)
+    return response

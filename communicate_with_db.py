@@ -52,3 +52,21 @@ def check_for_near_events():
 def get_user_email_by_id(id: str):
     email = session.query(User).where(User.id == int(id)).first().email
     return email
+
+
+def get_user_by(email: str):
+    return session.query(User).filter(User.email == email).first()
+
+
+def delete_user_events_by_email(email: str):
+    user = get_user_by(email)
+    if user:
+        session.query(Event).filter(Event.user == user.id).delete()
+        session.commit()
+
+
+def delete_user_by_email(email: str):
+    user = get_user_by(email)
+    if user:
+        session.delete(user)
+        session.commit()
