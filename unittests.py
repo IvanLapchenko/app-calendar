@@ -3,6 +3,8 @@ import requests
 
 
 class TestCalendarAPI(unittest.TestCase):
+    token = None
+
     def setUp(self):
         self.url = "http://localhost:5000"
         self.headers = {"Content-Type": "application/json"}
@@ -12,7 +14,7 @@ class TestCalendarAPI(unittest.TestCase):
             "email": "test_email@test.com"
         }
 
-    def test_register_new_user(self):
+    def test1_register_new_user(self):
         response = requests.post(f"{self.url}/signup", json=self.login_data, headers=self.headers)
 
         # check if user added to db
@@ -25,33 +27,53 @@ class TestCalendarAPI(unittest.TestCase):
         self.assertEqual(response.json()["isAddedToDB"], False)
         self.assertEqual(response.json()["reason"], "user exist")
 
-    def test_login_right_credentials(self):
+    def test2_login_right_credentials(self):
+        global token
         response = requests.post(f"{self.url}/login", json=self.login_data, headers=self.headers)
         self.assertEqual(response.status_code, 200)
-
         self.assertTrue("token" in response.json())
+        token = response.json()["token"]
 
-        self.token = response.json()["token"]
+    def test3_login_wrong_credentials(self):
+        data = {
+            "nickname": "test_nickname",
+            "password": "wrong_password"
+        }
+        response = requests.post(f"{self.url}/login", json=data, headers=self.headers)
 
-    def test_login_wrong_credentials(self):
-        def test_login_with_wrong_data(self):
-            data = {
-                "nickname": "test_nickname",
-                "password": "wrong_password"
-            }
-            response = requests.post(f"{self.url}/login", json=data, headers=self.headers)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), {"isLogged": False})
 
-            self.assertEqual(response.status_code, 400)
-            self.assertEqual(response.json(), {"isLogged": False})
+    def test4_create_event(self):
+        global token
+        data = {
+            "header": "test_event",
+            "describe": "test_description",
+            "date": "2023-03-17",
+            "time": "11:00"
+        }
+        headers = {"Authorization": f"Bearer {token}"}
+        response = requests.post(f"{self.url}/create_event", json=data, headers=headers)
 
-    def test_delete_user_by_email(self):
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["msg"], "success")
+
+    def test5_get_events(self):
+        global token
+        date = "2023-03-17"
+        self.headers["Authorization"] = f"Bearer {token}"
+        response = requests.get(f"{self.url}/get_events_by/{date}", headers=self.headers)
+        self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(response.json(), list)
+
+    def test6_delete_user_by_email(self):
         response = requests.get(f"{self.url}/delete_user_by/{self.login_data['email']}", headers=self.headers)
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()["is_deleted"], True)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
 
     #
