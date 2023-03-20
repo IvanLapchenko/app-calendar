@@ -119,3 +119,18 @@ def delete_user_by(email):
     response = make_response(resp_data)
     response.status_code = status
     return response
+
+
+@app.route("/delete_event_by/<header>")
+@jwt_required()
+def delete_event_by(header):
+    user = get_jwt_identity()
+    try:
+        delete_event_using(header, user)
+        response_data = {"isDeleted": True}
+        status_code = 200
+    except:
+        response_data = {"isDeleted": False}
+        status_code = 409
+    response = make_response(response_data, status_code)
+    return response

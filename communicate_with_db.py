@@ -70,3 +70,7 @@ def delete_user_by_email(email: str):
     if user:
         session.delete(user)
         session.commit()
+
+
+def delete_event_using(header: str, user: int):
+    session.query(Event).filter(Event.header == header, Event.user == user).delete()

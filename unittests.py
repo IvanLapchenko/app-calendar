@@ -1,3 +1,4 @@
+import json
 import unittest
 import requests
 
@@ -12,6 +13,12 @@ class TestCalendarAPI(unittest.TestCase):
             "nickname": "test_nickname",
             "password": "test_password",
             "email": "test_email@test.com"
+        }
+        self.event_data = {
+            "header": "test_event",
+            "description": "test description",
+            "date": "2023-03-18",
+            "time": "15:00"
         }
 
     def test1_register_new_user(self):
@@ -46,27 +53,34 @@ class TestCalendarAPI(unittest.TestCase):
 
     def test4_create_event(self):
         global token
-        data = {
-            "header": "test_event",
-            "describe": "test_description",
-            "date": "2023-03-17",
-            "time": "11:00"
-        }
-        headers = {"Authorization": f"Bearer {token}"}
-        response = requests.post(f"{self.url}/create_event", json=data, headers=headers)
+
+        self.headers['Authorization'] = f'Bearer {token}'
+        response = requests.post(f"{self.url}/create_event", json=self.event_data, headers=self.headers)
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()["msg"], "success")
 
-    def test5_get_events(self):
+    def test4_get_events_by_date_added_in_previous_test(self):
         global token
-        date = "2023-03-17"
-        self.headers["Authorization"] = f"Bearer {token}"
-        response = requests.get(f"{self.url}/get_events_by/{date}", headers=self.headers)
-        self.assertEqual(response.status_code, 200)
-        self.assertIsInstance(response.json(), list)
+        self.headers['Authorization'] = f'Bearer {token}'
 
-    def test6_delete_user_by_email(self):
+        response = requests.get(url=f'{self.url}/get_events_by/{self.event_data["date"]}', headers=self.headers)
+
+        response_data = json.loads(response.json()[0])
+
+        self.assertEqual(response_data["header"], self.event_data["header"])
+        self.assertEqual(response_data["time"], self.event_data["time"])
+
+    def test6_delete_event_added_in_previous_test(self):
+        global token
+        self.headers['Authorization'] = f'Bearer {token}'
+
+        response = requests.get(url=f'{self.url}/delete_event_by/{self.event_data["header"]}', headers=self.headers)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.json()["isDeleted"])
+
+    def test7_delete_user_by_email(self):
         response = requests.get(f"{self.url}/delete_user_by/{self.login_data['email']}", headers=self.headers)
 
         self.assertEqual(response.status_code, 200)
